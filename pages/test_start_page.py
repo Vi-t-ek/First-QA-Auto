@@ -1,12 +1,14 @@
 import logging
 import random
 import string
-from time import sleep, time
+
 
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
+# from selenium.webdriver.support import expected_conditions
 
-from constants.base import LOGIN_FIELD_LOGIN, PASSWORD_FIELD, SIGN_IN, ERROR_MESSAGE_LOGIN, DRIVER_PATH, BASE_URL
+from constants.base import SIGN_IN, DRIVER_PATH, BASE_URL, ERROR_MESSAGE_LOGIN, REGISTER_LOGIN, REGISTER_SIGN_UP_BUTTON, \
+    REGISTER_PASSWORD, PASSWORD, ERROR_MESSAGE_MAIL
 
 
 class TestStartPage:
@@ -33,49 +35,35 @@ class TestStartPage:
         """
         # Create driver
         driver = WebDriver(DRIVER_PATH)
+        driver.implicitly_wait(15)
 
         # Open start page
         self.log.info("Opening start page")
-        driver.get("https://qa-complex-app-for-testing.herokuapp.com/")
-        sleep(2)
-        # Clear field login
-        self.log.info("Cleaning login field")
-        # - Find element
-        login_field = driver.find_element(by=By.XPATH(LOGIN_FIELD_LOGIN.random_str()))
-        # # - Clear
-        # login_field.clear()
+        driver.get(BASE_URL)
 
-        # Clear field password
-        self.log.info("Cleaning password field")
-        # - Find element
-        password_field = driver.find_element(by=By.XPATH(PASSWORD_FIELD.random_num()))
-        # # - Clear
-        # password_field.clear()
-        sleep(2)
-        # Click on 'Sign In' button
         self.log.info("Going to click 'Sign In' button")
-        driver.find_element(by=By.XPATH(SIGN_IN)).click()
-        sleep(2)
-        # Verify error message
-        self.log.info("Verifying error message")
-        error_message = driver.find_element(by=By.XPATH(ERROR_MESSAGE_LOGIN))
+
+        self.log.info("Going to click 'Sign In' button")
+        driver.find_element(by=By.XPATH, value=SIGN_IN).click()
+
+        error_message = driver.find_element(by=By.XPATH, value=ERROR_MESSAGE_LOGIN)
         assert error_message.text == "Invalid username / pasword", "Text is not valid"
 
         # Close driver
         driver.close()
 
-    def test_invalid_login(self):
+    def test_invalid_mail(self):
         """
         - Create driver
         - Open start page
-        - Fill field login
+        - Fill field username
         - Fill field password
-        - Click on 'Sign In' button
-        - Verify error message
+        - Click on 'Sign Up' button
+        - Verify error message mail
         """
         # Create driver
         driver = WebDriver(DRIVER_PATH)
-
+        driver.implicitly_wait(15)
         # Open start page
         self.log.info("Opening start page")
         driver.get(BASE_URL)
@@ -83,36 +71,66 @@ class TestStartPage:
         # Clear field login
         self.log.info("Filling login field")
         # - Find element
-        login_field = driver.find_element(by=By.XPATH(LOGIN_FIELD_LOGIN))
+        login_field = driver.find_element(By.XPATH, REGISTER_LOGIN)
         # - Clear
         login_field.clear()
-        # - Fill
         login_field.send_keys("RandomName13")
-        sleep(1)
 
+        # - Fill
         # Clear field password
         self.log.info("Filling password field")
         # - Find element
-        password_field = driver.find_element(by=By.XPATH(PASSWORD_FIELD))
+        password_field = driver.find_element(By.XPATH, REGISTER_PASSWORD)
         # - Clear
         password_field.clear()
         # - Fill
-        password_field.send_keys("RandomPwd11")
-        sleep(1)
+        password_field.send_keys(PASSWORD)
 
         # Click on 'Sign In' button
         self.log.info("Going to click 'Sign In' button")
-        driver.find_element(by=By.XPATH(SIGN_IN)).click()
-        sleep(1)
+        driver.find_element(By.XPATH, REGISTER_SIGN_UP_BUTTON).click()
 
         # Verify error message
         self.log.info("Verifying error message")
-        error_message = driver.find_element(by=By.XPATH(ERROR_MESSAGE_LOGIN))
-        assert error_message.text == "Invalid username / pasword", "Text is not valid"
+        error_message = driver.find_element(By.XPATH, ERROR_MESSAGE_MAIL)
+        assert error_message.text == "You must provide a valid email address.", "Text is not valid"
 
         # Close driver
         driver.close()
 
+    # """Generate random string"""
+    #     return ''.join(random.choice(string.ascii_letters) for _ in range(length))
+    #
+    #
+    # def wait_until_clickable(self, xpath):
+    # """Waits until element is clickable"""
+    #     return self.waiter.until(method=expected_conditions.element_to_be_clickable((By.XPATH, xpath)))
+    #
+    #
+    # def wait_until_displayed(self, xpath):
+    #     """Waits until element is displayed"""
+    #     return self.waiter.until(method=expected_conditions.visibility_of_element_located((By.XPATH, xpath)))
+    #
+    #
+    # def is_element_exists(self, xpath):
+    # """Check if element exists"""
+    #     try:
+    #         self.driver.find_element(by=By.XPATH, value=xpath)
+    #         return True
+    #     except (TimeoutError, NoSuchElementException):
+    #         return False
+    #
+    #
+    # def fill_field(self, xpath, value):
+    #     """Send data into the field"""
+    #     field = self.wait_until_clickable(xpath)
+    #     field.clear()
+    #     field.send_keys(value)
+    #
+    #
+    # def click(self, xpath):
+    #     """Find and click the element"""
+    #     self.wait_until_clickable(xpath).click()
     # def test_register(self):
     #     """
     #     - Open start page
